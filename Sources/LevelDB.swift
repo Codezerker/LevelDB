@@ -3,17 +3,25 @@ import Foundation
 
 public final class LevelDB {
 
+    // MARK: - Type definitions
+
     public enum DatabaseError: Error {
         case lowLevel(message: String?)
     }
 
-    private let database: OpaquePointer
+    public typealias KeyEnumeration = (String, Data) -> Void
+
+    // MARK: - Properties
 
     public static var version: String {
         let majorVersion = leveldb_major_version()
         let minorVersion = leveldb_minor_version()
         return "\(majorVersion).\(minorVersion)"
     }
+
+    private let database: OpaquePointer
+
+    // MARK: - Life cycle
 
     public init(fileURL: URL) throws {
         let options = leveldb_options_create()
@@ -33,6 +41,12 @@ public final class LevelDB {
         self.database = database
     }
 
+    deinit {
+        leveldb_close(database)
+    }
+
+    // MARK: - Data operations
+
     public func data(for key: String) -> Data? {
         Unimplemented()
     }
@@ -40,6 +54,8 @@ public final class LevelDB {
     public func setData(_ data: Data?, for key: String) {
         Unimplemented()
     }
+
+    // MARK: - Subscripts
 
     public subscript(key: String) -> Data? {
         get {
@@ -50,7 +66,7 @@ public final class LevelDB {
         }
     }
 
-    public typealias KeyEnumeration = (String, Data) -> Void
+    // MARK: - Enumerates
 
     public func enumerateKeys(using closure: KeyEnumeration) {
         Unimplemented()
