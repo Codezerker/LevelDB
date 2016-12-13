@@ -1,6 +1,13 @@
 import Clibleveldb
+import Foundation
 
-public struct LevelDB {
+public class LevelDB {
+
+    public enum DatabaseError: Error {
+        case lowLevel(message: String?)
+    }
+
+    private let database: OpaquePointer
 
     public static var version: String {
         let majorVersion = leveldb_major_version()
@@ -8,5 +15,21 @@ public struct LevelDB {
         return "\(majorVersion).\(minorVersion)"
     }
 
-    // TODO: wrap libleveldb with swift
+    public init(dataFileURL: URL) throws {
+        let options = leveldb_options_create()
+        leveldb_options_set_create_if_missing(options, 1)
+
+        let databaseName = dataFileURL.path.cString(using: .utf8)
+        var errorPtr: UnsafeMutablePointer<Int8>? = nil
+
+        guard let database = leveldb_open(options, databaseName, &errorPtr) else {
+            if let validErrorPtr = errorPtr {
+                let error = String(cString: validErrorPtr, encoding: .utf8)
+                throw DatabaseError.lowLevel(message: error)
+            } else {
+                throw DatabaseError.lowLevel(message: nil)
+            }
+        }
+        self.database = database
+    }
 }
