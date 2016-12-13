@@ -6,6 +6,7 @@ class LevelDBTests: XCTestCase {
     static var allTests : [(String, (LevelDBTests) -> () throws -> Void)] {
         return [
             ("testInitWithDataFileURL", testInitWithDataFileURL),
+            ("testBasicOperations", testBasicOperations),
         ]
     }
 
