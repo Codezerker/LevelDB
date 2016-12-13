@@ -1,7 +1,7 @@
 import Clibleveldb
 import Foundation
 
-public class LevelDB {
+public final class LevelDB {
 
     public enum DatabaseError: Error {
         case lowLevel(message: String?)
@@ -31,5 +31,32 @@ public class LevelDB {
             }
         }
         self.database = database
+    }
+
+    public func data(for key: String) -> Data? {
+        Unimplemented()
+    }
+
+    public func setData(_ data: Data?, for key: String) {
+        Unimplemented()
+    }
+
+    public subscript(key: String) -> Data? {
+        get {
+            return data(for: key)
+        }
+        set(newValue) {
+            setData(newValue, for: key)
+        }
+    }
+
+    public typealias KeyEnumeration = (String, Data) -> Void
+
+    public func enumerateKeys(using closure: KeyEnumeration) {
+        Unimplemented()
+    }
+
+    public func enumerateKeys(with keyPrefix: String, using closure: KeyEnumeration) {
+        Unimplemented()
     }
 }
