@@ -15,11 +15,11 @@ public class LevelDB {
         return "\(majorVersion).\(minorVersion)"
     }
 
-    public init(dataFileURL: URL) throws {
+    public init(fileURL: URL) throws {
         let options = leveldb_options_create()
         leveldb_options_set_create_if_missing(options, 1)
 
-        let databaseName = dataFileURL.path.cString(using: .utf8)
+        let databaseName = fileURL.path.cString(using: .utf8)
         var errorPtr: UnsafeMutablePointer<Int8>? = nil
 
         guard let database = leveldb_open(options, databaseName, &errorPtr) else {
