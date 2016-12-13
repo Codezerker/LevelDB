@@ -27,4 +27,25 @@ class LevelDBTests: XCTestCase {
             XCTAssert(false, "expecting only DatabaseError")
         }
     }
+
+    func testBasicOperations() {
+        let fileURL = URL(fileURLWithPath: "/tmp/leveldb.test", isDirectory: true)
+        guard let database = try? LevelDB(fileURL: fileURL) else {
+            XCTAssert(false, "unexpected initialization failure")
+            return
+        }
+
+        let key1 = "key1"
+        let value1 = "value1".data(using: .utf8)
+
+        database[key1] = value1
+        guard let value = database[key1] else {
+            XCTAssert(false, "value is missing")
+            return
+        }
+        XCTAssertEqual(value, value1)
+
+        database[key1] = nil
+        XCTAssertNil(database[key1], "value should have been removed")
+    }
 }
