@@ -74,13 +74,13 @@ class LevelDBTests: XCTestCase {
         }
 
         var description = ""
-
         database.enumerateKeys { key, value in
             let valueString = String(data: value, encoding: .utf8) ?? "nil"
             description += "\(key):\(valueString)|"
         }
         XCTAssertEqual(description, "a:1|b:2|c:3|prefix_a:4|prefix_b:5|prefix_c:6|x:7|y:8|z:9|")
 
+        description = ""
         database.enumerateKeys(with: "prefix_") { key, value in
             let valueString = String(data: value, encoding: .utf8) ?? "nil"
             description += "\(key):\(valueString)|"

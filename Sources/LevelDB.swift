@@ -143,11 +143,11 @@ public final class LevelDB {
             }
 
             var keyLength = 0
-            guard let keyCString = leveldb_iter_key(iterator, &keyLength) else {
+            guard let keyPtr = leveldb_iter_key(iterator, &keyLength) else {
                 return false
             }
 
-            let key = String(cString: keyCString)
+            let key = String(cString: keyPtr)
             return key.hasPrefix(keyPrefix)
         }
 
@@ -167,7 +167,7 @@ public final class LevelDB {
             // keyPtr and valuePtr doesn't seems to be null-terminated,
             // this prevents us from being use them directrly as (Swift) Strings.
             // thus we need to use keyLength and valueLength to convert the
-            // char pointer to Strings.
+            // char* to String/Data.
 
             let keyRawPointer = UnsafeRawPointer(keyPtr)
             let keyData = Data(bytes: keyRawPointer, count: keyLength)
