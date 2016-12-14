@@ -115,11 +115,7 @@ public final class LevelDB {
 
     // MARK: - Enumerates
 
-    public func enumerateKeys(using closure: KeyEnumeration) {
-        Unimplemented()
-    }
-
-    public func enumerateKeys(with keyPrefix: String, using closure: KeyEnumeration) {
+    public func enumerateKeys(with keyPrefix: String? = nil, using closure: KeyEnumeration) {
         Unimplemented()
     }
 }

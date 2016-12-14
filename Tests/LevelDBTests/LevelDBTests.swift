@@ -7,6 +7,7 @@ class LevelDBTests: XCTestCase {
         return [
             ("testInitWithDataFileURL", testInitWithDataFileURL),
             ("testBasicOperations", testBasicOperations),
+            ("testEnumerates", testEnumerates),
         ]
     }
 
@@ -48,5 +49,50 @@ class LevelDBTests: XCTestCase {
 
         database[key1] = nil
         XCTAssertNil(database[key1], "value should have been removed")
+    }
+
+    func testEnumerates() {
+        let fileURL = URL(fileURLWithPath: "/tmp/leveldb.test", isDirectory: true)
+        guard let database = try? LevelDB(fileURL: fileURL) else {
+            XCTAssert(false, "unexpected initialization failure")
+            return
+        }
+
+        let testCase = [
+            "a" : "1",
+            "b" : "2",
+            "c" : "3",
+            "prefix_a" : "4",
+            "prefix_b" : "5",
+            "prefix_c" : "6",
+            "x" : "7",
+            "y" : "8",
+            "z" : "9",
+        ]
+        for (key, value) in testCase {
+            database[key] = value.data(using: .utf8)
+        }
+
+        var description = ""
+
+        database.enumerateKeys { key, value in
+            let valueString = String(data: value, encoding: .utf8)!
+            description += "\(key):\(valueString)|"
+        }
+        XCTAssertEqual(description, "a:1|b:2|c:3|prefix_a:4|prefix_b:5|prefix_c:6|x:7|y:8|z:9|")
+
+        database.enumerateKeys(with: "prefix_") { key, value in
+            let valueString = String(data: value, encoding: .utf8)!
+            description += "\(key):\(valueString)|"
+        }
+        XCTAssertEqual(description, "prefix_a:4|prefix_b:5|prefix_c:6|")
+
+        // clean up
+        for (key, _) in testCase {
+            database[key] = nil
+        }
+        for (key, _) in testCase {
+            XCTAssertNil(database[key], "all test value should have been removed")
+        }
     }
 }
