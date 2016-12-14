@@ -119,7 +119,7 @@ public final class LevelDB {
         let options = leveldb_readoptions_create()
         let iterator = leveldb_create_iterator(database, options)
         defer {
-            leveldb_iter_destroy(database)
+            leveldb_iter_destroy(iterator)
             leveldb_readoptions_destroy(options)
         }
 
