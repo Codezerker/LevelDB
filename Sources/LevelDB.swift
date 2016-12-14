@@ -178,8 +178,6 @@ public final class LevelDB {
             let valueRawPointer = UnsafeRawPointer(valuePtr)
             let value = Data(bytes: valueRawPointer, count: valueLength)
 
-            print(key)
-
             closure(key, value)
         }
     }
