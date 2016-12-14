@@ -116,6 +116,71 @@ public final class LevelDB {
     // MARK: - Enumerates
 
     public func enumerateKeys(with keyPrefix: String? = nil, using closure: KeyEnumeration) {
-        Unimplemented()
+        let options = leveldb_readoptions_create()
+        let iterator = leveldb_create_iterator(database, options)
+        defer {
+            leveldb_iter_destroy(database)
+            leveldb_readoptions_destroy(options)
+        }
+
+        func seekToBegining() {
+            guard let keyPrefix = keyPrefix else {
+                leveldb_iter_seek_to_first(iterator)
+                return
+            }
+
+            leveldb_iter_seek(iterator, keyPrefix, keyPrefix.lengthOfBytes(using: .utf8))
+        }
+
+        func isValid() -> Bool {
+            let valid = leveldb_iter_valid(iterator) != 0
+            guard valid else {
+                return false
+            }
+
+            guard let keyPrefix = keyPrefix else {
+                return valid
+            }
+
+            var keyLength = 0
+            guard let keyCString = leveldb_iter_key(iterator, &keyLength) else {
+                return false
+            }
+
+            let key = String(cString: keyCString)
+            return key.hasPrefix(keyPrefix)
+        }
+
+        seekToBegining()
+        while isValid() {
+            defer {
+                leveldb_iter_next(iterator)
+            }
+
+            var keyLength = 0
+            var valueLength = 0
+            guard let keyPtr = leveldb_iter_key(iterator, &keyLength),
+                  let valuePtr = leveldb_iter_value(iterator, &valueLength) else {
+                continue
+            }
+
+            // keyPtr and valuePtr doesn't seems to be null-terminated,
+            // which prevents us from being use them directrly as (Swift) Strings.
+            // thus we need to use keyLength and valueLength to convert the
+            // char pointer to Strings.
+
+            let keyRawPointer = UnsafeRawPointer(keyPtr)
+            let keyData = Data(bytes: keyRawPointer, count: keyLength)
+            guard let key = String(data: keyData, encoding: .utf8) else {
+                continue
+            }
+
+            let valueRawPointer = UnsafeRawPointer(valuePtr)
+            let value = Data(bytes: valueRawPointer, count: valueLength)
+
+            print(key)
+
+            closure(key, value)
+        }
     }
 }

@@ -9,6 +9,7 @@ all:
 	swift build $(LINKER_FLAGS)
 
 test:
+	rm -rf $(BUILD_DIR)
 	swift test $(LINKER_FLAGS)
 
 clean:
