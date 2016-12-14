@@ -3,4 +3,4 @@ osx_image: xcode8.2
 before_install:
   - brew install leveldb
 script:
-	make test
+  - make test
