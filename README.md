@@ -1,6 +1,8 @@
 # LevelDB
 Swift wrapper for [LevelDB](https://github.com/google/leveldb)
 
+![build status](https://travis-ci.org/Codezerker/LevelDB.svg?branch=master)
+
 ## Usage
 
 ```swift
