@@ -165,7 +165,7 @@ public final class LevelDB {
             }
 
             // keyPtr and valuePtr doesn't seems to be null-terminated,
-            // this prevents us from being use them directrly as (Swift) Strings.
+            // this prevents us from using them directrly as (Swift) Strings.
             // thus we need to use keyLength and valueLength to convert the
             // char* to String/Data.
 
