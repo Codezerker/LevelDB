@@ -61,8 +61,8 @@ public final class LevelDB {
         var errorPtr: UnsafeMutablePointer<Int8>? = nil
 
         if let valueBytes = leveldb_get(database, options, key, keyLength, &resultLength, &errorPtr) {
-            let valueString = String(cString: valueBytes)
-            return valueString.data(using: .utf8)
+            let valueRawPtr = UnsafeRawPointer(valueBytes)
+            return Data(bytes: valueRawPtr, count: resultLength)
         } else {
             return nil
         }
@@ -147,7 +147,12 @@ public final class LevelDB {
                 return false
             }
 
-            let key = String(cString: keyPtr)
+            let keyRawPointer = UnsafeRawPointer(keyPtr)
+            let keyData = Data(bytes: keyRawPointer, count: keyLength)
+            guard let key = String(data: keyData, encoding: .utf8) else {
+                return false
+            }
+
             return key.hasPrefix(keyPrefix)
         }
 
